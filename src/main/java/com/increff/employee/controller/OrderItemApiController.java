@@ -1,10 +1,13 @@
 package com.increff.employee.controller;
 
+import com.increff.employee.dao.OrderDao;
+import com.increff.employee.dao.OrderItemDao;
 import com.increff.employee.model.OrderItemData;
 import com.increff.employee.model.OrderItemForm;
 import com.increff.employee.pojo.OrderItemPojo;
 import com.increff.employee.service.ApiException;
 import com.increff.employee.service.OrderItemService;
+import com.increff.employee.service.OrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +23,12 @@ public class OrderItemApiController {
 	@Autowired
 	private OrderItemService service;
 
+	@Autowired
+	private OrderDao orderDao;
+
+
 	@ApiOperation(value = "Adds an orderItem")
-	@RequestMapping(path = "/api/createOrder", method = RequestMethod.POST)
+	@RequestMapping(path = "/api/orderItem", method = RequestMethod.POST)
 	public void add(@RequestBody OrderItemForm form) throws ApiException {
 		OrderItemPojo p = convert(form);
 		service.add(p);
@@ -61,7 +68,7 @@ public class OrderItemApiController {
 	}
 	
 
-	private static OrderItemData convert(OrderItemPojo p) {
+	private OrderItemData convert(OrderItemPojo p) {
 		OrderItemData d = new OrderItemData();
 		d.setProductId(p.getProductId());
 		d.setQuantity(p.getQuantity());
@@ -71,9 +78,10 @@ public class OrderItemApiController {
 		return d;
 	}
 
-	private static OrderItemPojo convert(OrderItemForm f) {
+	private  OrderItemPojo convert(OrderItemForm f) throws ApiException {
 		OrderItemPojo p = new OrderItemPojo();
-		p.setProductId(f.getProductId());
+		p.setOrderId(f.getOrderId());
+		p.setProductId(service.checkBarcode(f.getBarcode()));
 		p.setQuantity(f.getQuantity());
 		p.setSellingPrice(f.getSellingPrice());
 		return p;

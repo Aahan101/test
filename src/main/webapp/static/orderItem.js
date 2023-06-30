@@ -1,9 +1,8 @@
 
 function getOrderItemUrl(){
-	var baseUrl = $("meta[name=baseUrl]").attr("content")
+	var baseUrl = $("meta[name=baseUrl]").attr("content");
 	return baseUrl + "/api/orderItem";
 }
-
 //BUTTON ACTIONS
 function addOrderItem(event){
 	//Set the values to update
@@ -78,6 +77,8 @@ function deleteOrderItem(id){
 	   error: handleAjaxError
 	});
 }
+
+
 
 // FILE UPLOAD METHODS
 var fileData = [];
@@ -211,6 +212,7 @@ function displayOrderItem(data){
 function init(){
 	$('#add-orderItem').click(addOrderItem);
 	$('#update-orderItem').click(updateOrderItem);
+//	$('#placeOrder').click(updateStoredData);
 	$('#refresh-data').click(getOrderItemList);
 	$('#upload-data').click(displayUploadData);
 	$('#process-data').click(processData);

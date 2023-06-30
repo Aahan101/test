@@ -19,7 +19,6 @@ public class InventoryDao extends AbstractDao {
 	private static String select_id = "select p from InventoryPojo p where id=:id";
 	private static String select_all = "SELECT p from InventoryPojo p";
 
-
 	@PersistenceContext
 	private EntityManager em;
 

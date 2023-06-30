@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class OrderItemPojo {
@@ -13,6 +15,7 @@ public class OrderItemPojo {
 	private int id;
 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	private int orderId;
 	private int productId;
 	private int quantity;

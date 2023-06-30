@@ -1,11 +1,9 @@
 package com.increff.employee.model;
 
 public class CreateOrderForm {
-
 	private String barcode;
 	private int quantity;
 	private double sellingPrice;
-
 	public String getBarcode() {
 		return barcode;
 	}
@@ -13,7 +11,6 @@ public class CreateOrderForm {
 	public void setBarcode(String barcode) {
 		this.barcode = barcode;
 	}
-
 	public int getQuantity() {
 		return quantity;
 	}

@@ -1,12 +1,20 @@
 package com.increff.employee.service;
 
+import com.increff.employee.dao.InventoryDao;
 import com.increff.employee.dao.OrderItemDao;
+import com.increff.employee.dao.ProductDao;
+import com.increff.employee.model.CreateOrderData;
+import com.increff.employee.model.CreateOrderForm;
+import com.increff.employee.model.OrderItemForm;
+import com.increff.employee.pojo.InventoryPojo;
 import com.increff.employee.pojo.OrderItemPojo;
+import com.increff.employee.pojo.ProductPojo;
 import com.increff.employee.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -14,6 +22,12 @@ public class OrderItemService {
 
 	@Autowired
 	private OrderItemDao dao;
+
+	@Autowired
+	private ProductDao productDao;
+
+	@Autowired
+	private InventoryDao inventoryDao;
 
 	@Transactional(rollbackOn = ApiException.class)
 	public void add(OrderItemPojo p) throws ApiException {
@@ -23,6 +37,19 @@ public class OrderItemService {
 //		}
 		dao.insert(p);
 	}
+//	List<OrderItemPojo> temp = new ArrayList<OrderItemPojo>();
+//	@Transactional(rollbackOn = ApiException.class)
+//	public void add2(OrderItemPojo p) throws ApiException{
+//		temp.add(p);
+//	}
+//	@Transactional(rollbackOn = ApiException.class)
+//	public void add3() throws ApiException{
+//		for(OrderItemPojo p:temp){
+//			dao.insert(p);
+//		}
+//		temp=null;
+//	}
+
 
 	@Transactional
 	public void delete(int id) {
@@ -49,6 +76,16 @@ public class OrderItemService {
 		ex.setSellingPrice(p.getSellingPrice());
 		dao.update(ex);
 	}
+	@Transactional(rollbackOn  = ApiException.class)
+	public void update2(int id, OrderItemPojo p, CreateOrderForm f) throws ApiException {
+//		normalize(p);
+		OrderItemPojo ex = getCheck(id);
+		ex.setOrderId(p.getOrderId());
+		p.setProductId(checkBarcode(f.getBarcode()));
+		p.setQuantity(checkQuantity(ex.getProductId(),f.getQuantity()));
+		p.setSellingPrice(checkMrp(f.getSellingPrice()));
+		dao.update(ex);
+	}
 
 	@Transactional
 	public OrderItemPojo getCheck(int id) throws ApiException {
@@ -58,6 +95,49 @@ public class OrderItemService {
 		}
 		return p;
 	}
+
+	@Transactional
+	public int checkBarcode(String barcode) throws ApiException {
+		ProductPojo p = productDao.checkBarcode(barcode);
+		if (p == null) {
+			throw new ApiException("Barcode does not exist ");
+		}
+		return p.getId();
+	}
+
+	@Transactional
+	public int checkQuantity(int id,int quantity) throws ApiException {
+		InventoryPojo p=inventoryDao.select(id);
+		if (p.getQuantity()<quantity) {
+			throw new ApiException("Quantity of product does not exist in Inventory");
+		}
+		return quantity;
+	}
+
+	@Transactional
+	public double checkMrp(double mrp) throws ApiException{
+		if(mrp<0){
+			throw new ApiException("Selling Price can not be negative");
+		}
+		return mrp;
+	}
+
+	@Transactional
+	public double totalRevenue(int id){
+		List<OrderItemPojo> list = dao.selectAllOrderId(id);
+		double amount=0;
+		for (OrderItemPojo p:list){
+			amount+=(p.getQuantity()*p.getSellingPrice());
+		}
+		return amount;
+	}
+
+	@Transactional
+	public int totalItemCount(int id){
+		List<OrderItemPojo> list = dao.selectAllOrderId(id);
+		return list.size();
+	}
+
 
 //	protected static void normalize(OrderItemPojo p) {
 //		p.setName(StringUtil.toLowerCase(p.getName()));

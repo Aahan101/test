@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 Test set: com.increff.employee.service.AboutAppServiceTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 1.522 s <<< FAILURE! - in com.increff.employee.service.AboutAppServiceTest
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 1.353 s <<< FAILURE! - in com.increff.employee.service.AboutAppServiceTest
 com.increff.employee.service.AboutAppServiceTest.testServiceApis  Time elapsed: 0 s  <<< ERROR!
 java.lang.IllegalStateException: Failed to load ApplicationContext
 	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:124)
@@ -58,9 +58,12 @@ Caused by: javax.persistence.PersistenceException: [PersistenceUnit: default] Un
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1687)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1624)
 	... 40 more
-Caused by: org.hibernate.MappingException: Composite-id class must implement Serializable: com.increff.employee.pojo.OrderItemPojo
-	at org.hibernate.mapping.RootClass.checkCompositeIdentifier(RootClass.java:293)
-	at org.hibernate.mapping.RootClass.validate(RootClass.java:276)
+Caused by: org.hibernate.MappingException: Could not determine type for: java.time.format.DateTimeFormatter, at table: OrderPojo, for columns: [org.hibernate.mapping.Column(time)]
+	at org.hibernate.mapping.SimpleValue.getType(SimpleValue.java:486)
+	at org.hibernate.mapping.SimpleValue.isValid(SimpleValue.java:453)
+	at org.hibernate.mapping.Property.isValid(Property.java:226)
+	at org.hibernate.mapping.PersistentClass.validate(PersistentClass.java:624)
+	at org.hibernate.mapping.RootClass.validate(RootClass.java:267)
 	at org.hibernate.boot.internal.MetadataImpl.validate(MetadataImpl.java:343)
 	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:461)
 	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:938)

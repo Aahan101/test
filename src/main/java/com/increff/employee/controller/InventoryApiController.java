@@ -6,7 +6,9 @@ import com.increff.employee.model.ProductData;
 import com.increff.employee.pojo.InventoryPojo;
 import com.increff.employee.pojo.ProductPojo;
 import com.increff.employee.service.ApiException;
+import com.increff.employee.service.BrandService;
 import com.increff.employee.service.InventoryService;
+import com.increff.employee.service.ProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,12 @@ public class InventoryApiController {
 	@Autowired
 	private InventoryService service;
 
+	@Autowired
+	private ProductService productService;
+
+	@Autowired
+	private BrandService brandService;
+
 	@ApiOperation(value = "Gets an inventory by ID")
 	@RequestMapping(path = "/api/inventory/{id}", method = RequestMethod.GET)
 	public InventoryData get(@PathVariable int id) throws ApiException {
@@ -31,7 +39,7 @@ public class InventoryApiController {
 
 	@ApiOperation(value = "Gets list of all inventory")
 	@RequestMapping(path = "/api/inventory", method = RequestMethod.GET)
-	public List<InventoryData> getAll() {
+	public List<InventoryData> getAll() throws ApiException {
 		List<InventoryPojo> list = service.getAll();
 		List<InventoryData> list2 = new ArrayList<InventoryData>();
 		for (InventoryPojo p : list) {
@@ -69,18 +77,14 @@ public class InventoryApiController {
 	}
 	
 
-	private InventoryData convert(InventoryPojo p) {
-		InventoryData d = new InventoryData();
+	private InventoryData convert(InventoryPojo p) throws ApiException{
+		InventoryData d = new InventoryData();;
 		d.setBarcode(service.getBarcode(p.getId()));
+		int id=productService.get(p.getId()).getBrand_category();
+		d.setBrand(productService.getValueBrandCategory(id).getBrand());
+		d.setCategory(productService.getValueBrandCategory(id).getCategory());
 		d.setQuantity(p.getQuantity());
 		d.setId(p.getId());
-		return d;
-	}
-	private static InventoryData convertForm(InventoryPojo p,ProductPojo pp) {
-		InventoryData d = new InventoryData();
-		d.setQuantity(p.getQuantity());
-		d.setId(p.getId());
-		d.setBarcode(pp.getBarcode());
 		return d;
 	}
 

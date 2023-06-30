@@ -1,0 +1,56 @@
+<!doctype html>
+
+<html lang="en">
+
+<head th:replace="snippets.html :: name_head"></head>
+
+<body>
+
+<nav th:replace="snippets.html :: name_app_navbar"></nav>
+
+<div class="container">
+
+	<h3>Day on Day Sales Report</h3>
+
+		<!-- Table -->
+		<div class="col-12">
+			<table class="table table-striped" id="orderItem-table">
+				<thead>
+				<tr>
+					<th scope="col">date</th>
+					<th scope="col">invoiced_orders_count</th>
+					<th scope="col">invoiced_items_count</th>
+					<th scope="col">total_revenue</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<td>30-12-2019</td>
+					<td>30</td>
+					<td>78</td>
+					<td>30000</td>
+				</tr>
+				<tr>
+					<td>30-12-2019</td>
+					<td>30</td>
+					<td>78</td>
+					<td>30000</td>
+				</tr>
+				<tr>
+					<td>30-12-2019</td>
+					<td>30</td>
+					<td>78</td>
+					<td>30000</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<footer th:replace="snippets.html :: name_footer"></footer>
+
+<script th:src="@{/static/invoiceOrderReport.js}"/></script>
+
+</body>
+
+</html>
