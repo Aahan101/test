@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderItemService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">employee-spring</a> &gt; <a href="index.source.html" class="el_package">com.increff.employee.service</a> &gt; <span class="el_source">OrderItemService.java</span></div><h1>OrderItemService.java</h1><pre class="source lang-java linenums">package com.increff.employee.service;
+
+import com.increff.employee.dao.InventoryDao;
+import com.increff.employee.dao.OrderItemDao;
+import com.increff.employee.dao.ProductDao;
+import com.increff.employee.model.CreateOrderData;
+import com.increff.employee.model.CreateOrderForm;
+import com.increff.employee.model.InventoryData;
+import com.increff.employee.model.OrderItemForm;
+import com.increff.employee.pojo.InventoryPojo;
+import com.increff.employee.pojo.OrderItemPojo;
+import com.increff.employee.pojo.ProductPojo;
+import com.increff.employee.util.StringUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+<span class="fc" id="L22">public class OrderItemService {</span>
+
+	@Autowired
+	private OrderItemDao dao;
+
+	@Autowired
+	private ProductDao productDao;
+
+	@Autowired
+	private InventoryDao inventoryDao;
+
+	@Transactional(rollbackOn = ApiException.class)
+	public void add(OrderItemPojo p) throws ApiException {
+//		normalize(p);
+//		if(StringUtil.isEmpty(p.getName())) {
+//			throw new ApiException(&quot;name cannot be empty&quot;);
+//		}
+<span class="nc" id="L39">		dao.insert(p);</span>
+<span class="nc" id="L40">	}</span>
+//	List&lt;OrderItemPojo&gt; temp = new ArrayList&lt;OrderItemPojo&gt;();
+//	@Transactional(rollbackOn = ApiException.class)
+//	public void add2(OrderItemPojo p) throws ApiException{
+//		temp.add(p);
+//	}
+//	@Transactional(rollbackOn = ApiException.class)
+//	public void add3() throws ApiException{
+//		for(OrderItemPojo p:temp){
+//			dao.insert(p);
+//		}
+//		temp=null;
+//	}
+
+
+	@Transactional
+	public void delete(int id) {
+<span class="nc" id="L57">		dao.delete(id);</span>
+<span class="nc" id="L58">	}</span>
+
+	@Transactional(rollbackOn = ApiException.class)
+	public OrderItemPojo get(int id) throws ApiException {
+<span class="nc" id="L62">		return getCheck(id);</span>
+	}
+
+	@Transactional
+	public List&lt;OrderItemPojo&gt; getAll() {
+<span class="nc" id="L67">		return dao.selectAll();</span>
+	}
+
+	@Transactional(rollbackOn  = ApiException.class)
+	public void update(int id, OrderItemPojo p) throws ApiException {
+//		normalize(p);
+<span class="nc" id="L73">		OrderItemPojo ex = getCheck(id);</span>
+<span class="nc" id="L74">		ex.setOrderId(p.getOrderId());</span>
+<span class="nc" id="L75">		ex.setProductId(p.getProductId());</span>
+<span class="nc" id="L76">		ex.setQuantity(p.getQuantity());</span>
+<span class="nc" id="L77">		ex.setSellingPrice(p.getSellingPrice());</span>
+<span class="nc" id="L78">		dao.update(ex);</span>
+<span class="nc" id="L79">	}</span>
+
+
+	@Transactional
+	public OrderItemPojo getCheck(int id) throws ApiException {
+<span class="nc" id="L84">		OrderItemPojo p = dao.select(id);</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">		if (p == null) {</span>
+<span class="nc" id="L86">			throw new ApiException(&quot;OrderItem with given ID does not exit, id: &quot; + id);</span>
+		}
+<span class="nc" id="L88">		return p;</span>
+	}
+
+	@Transactional
+	public int checkBarcode(String barcode) throws ApiException {
+<span class="nc" id="L93">		ProductPojo p = productDao.checkBarcode(barcode);</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">		if (p == null) {</span>
+<span class="nc" id="L95">			throw new ApiException(&quot;Barcode does not exist &quot;);</span>
+		}
+<span class="nc" id="L97">		return p.getId();</span>
+	}
+
+	@Transactional
+	public int checkQuantity(int id,int quantity) throws ApiException {
+<span class="nc" id="L102">		InventoryPojo p=inventoryDao.select(id);</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">		if (p.getQuantity()&lt;quantity) {</span>
+<span class="nc" id="L104">			throw new ApiException(&quot;Quantity of product does not exist in Inventory&quot;);</span>
+		}
+<span class="nc" id="L106">		return quantity;</span>
+	}
+
+	@Transactional
+	public double checkMrp(double mrp) throws ApiException{
+<span class="nc bnc" id="L111" title="All 2 branches missed.">		if(mrp&lt;0){</span>
+<span class="nc" id="L112">			throw new ApiException(&quot;Selling Price can not be negative&quot;);</span>
+		}
+<span class="nc" id="L114">		return mrp;</span>
+	}
+
+	@Transactional
+	public double totalRevenue(int id){
+<span class="nc" id="L119">		List&lt;OrderItemPojo&gt; list = dao.selectAllOrderId(id);</span>
+<span class="nc" id="L120">		double amount = 0;</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">		for (OrderItemPojo p:list){</span>
+<span class="nc" id="L122">			amount += (p.getQuantity()*p.getSellingPrice());</span>
+<span class="nc" id="L123">		}</span>
+<span class="nc" id="L124">		return amount;</span>
+	}
+
+	@Transactional
+	public int totalItemCount(int id){
+<span class="nc" id="L129">		List&lt;OrderItemPojo&gt; list = dao.selectAllOrderId(id);</span>
+<span class="nc" id="L130">		return list.size();</span>
+	}
+
+
+//	protected static void normalize(OrderItemPojo p) {
+//		p.setName(StringUtil.toLowerCase(p.getName()));
+//	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

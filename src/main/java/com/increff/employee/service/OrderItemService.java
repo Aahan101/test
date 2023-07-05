@@ -5,6 +5,7 @@ import com.increff.employee.dao.OrderItemDao;
 import com.increff.employee.dao.ProductDao;
 import com.increff.employee.model.CreateOrderData;
 import com.increff.employee.model.CreateOrderForm;
+import com.increff.employee.model.InventoryData;
 import com.increff.employee.model.OrderItemForm;
 import com.increff.employee.pojo.InventoryPojo;
 import com.increff.employee.pojo.OrderItemPojo;
@@ -76,16 +77,7 @@ public class OrderItemService {
 		ex.setSellingPrice(p.getSellingPrice());
 		dao.update(ex);
 	}
-	@Transactional(rollbackOn  = ApiException.class)
-	public void update2(int id, OrderItemPojo p, CreateOrderForm f) throws ApiException {
-//		normalize(p);
-		OrderItemPojo ex = getCheck(id);
-		ex.setOrderId(p.getOrderId());
-		p.setProductId(checkBarcode(f.getBarcode()));
-		p.setQuantity(checkQuantity(ex.getProductId(),f.getQuantity()));
-		p.setSellingPrice(checkMrp(f.getSellingPrice()));
-		dao.update(ex);
-	}
+
 
 	@Transactional
 	public OrderItemPojo getCheck(int id) throws ApiException {
@@ -125,9 +117,9 @@ public class OrderItemService {
 	@Transactional
 	public double totalRevenue(int id){
 		List<OrderItemPojo> list = dao.selectAllOrderId(id);
-		double amount=0;
+		double amount = 0;
 		for (OrderItemPojo p:list){
-			amount+=(p.getQuantity()*p.getSellingPrice());
+			amount += (p.getQuantity()*p.getSellingPrice());
 		}
 		return amount;
 	}

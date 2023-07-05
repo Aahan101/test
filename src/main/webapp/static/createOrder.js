@@ -14,7 +14,22 @@ function addCreateOrder(event){
 	//Set the values to update
 	var $form = $("#createOrder-form");
 	var json = toJson($form);
+
 	var url = getCreateOrderUrl();
+	var json1=JSON.parse(json);
+	var data= createOrderData;
+        console.log("The data is: ",data);
+        // Find the object with the matching ID
+        //parsedArray.forEach(function(e) {
+
+        var objectToUpdate= data.find(function(obj) {
+            return obj.barcode === json1.barcode;
+        });
+
+        if (objectToUpdate) {
+          // Update the properties of the object
+          throw new Error("Barcode already exists");
+        }
 
 	$.ajax({
 	   url: url,
@@ -29,8 +44,10 @@ function addCreateOrder(event){
            console.log(pa.barcode);
            pa.id=generateUniqueId();
            console.log("json id= ",pa.id);
-	        createOrderData.push(pa);
-	   		getCreateOrderList();
+
+           createOrderData.push(pa);
+
+	   	   getCreateOrderList();
 	   },
 	   error: handleAjaxError
 	});

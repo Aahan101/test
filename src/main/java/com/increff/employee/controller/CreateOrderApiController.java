@@ -31,6 +31,7 @@ public class CreateOrderApiController {
 	@RequestMapping(path = "/api/createOrder", method = RequestMethod.POST)
 	public void add(@RequestBody CreateOrderForm form) throws ApiException {
 	OrderItemPojo p = convert2(form);
+
 	//service.add(p);
 	}
 
@@ -97,12 +98,12 @@ public class CreateOrderApiController {
 	}
 
 
-	private OrderItemPojo convert(CreateOrderForm f) {
-		OrderItemPojo p = new OrderItemPojo();
-		p.setQuantity(f.getQuantity());
-		p.setSellingPrice(f.getSellingPrice());
-		p.setProductId(productDao.checkBarcode(f.getBarcode()).getId());
-		return p;
-	}
+//	private OrderItemPojo convert(CreateOrderForm f) {
+//		OrderItemPojo p = new OrderItemPojo();
+//		p.setQuantity(f.getQuantity());
+//		p.setSellingPrice(f.getSellingPrice());
+//		p.setProductId(productDao.checkBarcode(f.getBarcode()).getId());
+//		return p;
+//	}
 
 }

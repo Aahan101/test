@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>salesReportApiController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">employee-spring</a> &gt; <a href="index.source.html" class="el_package">com.increff.employee.controller</a> &gt; <span class="el_source">salesReportApiController.java</span></div><h1>salesReportApiController.java</h1><pre class="source lang-java linenums">package com.increff.employee.controller;
+
+import com.increff.employee.dao.BrandDao;
+import com.increff.employee.dao.OrderDao;
+import com.increff.employee.dao.ProductDao;
+import com.increff.employee.model.OrderData;
+import com.increff.employee.model.OrderForm;
+import com.increff.employee.model.SalesData;
+import com.increff.employee.pojo.BrandPojo;
+import com.increff.employee.pojo.OrderItemPojo;
+import com.increff.employee.service.ApiException;
+import com.increff.employee.service.BrandService;
+import com.increff.employee.service.OrderItemService;
+import com.increff.employee.service.OrderService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Api
+@RestController
+<span class="fc" id="L25">public class salesReportApiController {</span>
+
+	@Autowired
+	private OrderItemService service;
+	@Autowired
+	private BrandService brandService;
+	@Autowired
+	private BrandDao brandDao;
+	@Autowired
+	private OrderDao orderDao;
+	@Autowired
+	private ProductDao productDao;
+
+	int findBrandCategory(List&lt;SalesData&gt; list,SalesData s){
+<span class="nc bnc" id="L39" title="All 2 branches missed.">		for(SalesData e: list){</span>
+<span class="nc" id="L40">			System.out.println(&quot;List Item:&quot;);</span>
+			String a,b,c,d;
+<span class="nc" id="L42">			a=e.getBrand();</span>
+<span class="nc" id="L43">			b=s.getBrand();</span>
+<span class="nc" id="L44">			c=e.getCategory();</span>
+<span class="nc" id="L45">			d=s.getCategory();</span>
+<span class="nc" id="L46">			System.out.println(e.getId() + &quot; &quot; + a + &quot; &quot; + c);</span>
+<span class="nc" id="L47">			System.out.println(s.getId() + &quot; &quot; + b + &quot; &quot; + d);</span>
+<span class="nc bnc" id="L48" title="All 4 branches missed.">			if(a.equals(b) &amp;&amp; c.equals(d)){// &amp;&amp; (e.getCategory()==s.getCategory())) {</span>
+<span class="nc" id="L49">				System.out.println(&quot;found&quot;);</span>
+<span class="nc" id="L50">				System.out.println(e.getId());</span>
+<span class="nc" id="L51">				return list.indexOf(e);</span>
+			}
+<span class="nc" id="L53">		}return -1;</span>
+	}
+	@ApiOperation(value = &quot;Gets list of all orders&quot;)
+	@RequestMapping(path = &quot;/api/report/salesReport&quot;, method = RequestMethod.GET)
+	public List&lt;SalesData&gt; getAll() {
+<span class="nc" id="L58">		List&lt;OrderItemPojo&gt; orderList = service.getAll();</span>
+<span class="nc" id="L59">		List&lt;SalesData&gt; list = new ArrayList&lt;SalesData&gt;();</span>
+//		for (BrandPojo p : brandList) {
+//			list.add(convert2(p));
+//		}
+<span class="nc bnc" id="L63" title="All 2 branches missed.">		for (OrderItemPojo p : orderList) {</span>
+<span class="nc" id="L64">			SalesData s= convert(p);</span>
+<span class="nc" id="L65">			int i=findBrandCategory(list,s);</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">			if(i==-1) {</span>
+<span class="nc" id="L67">				list.add(convert(p));</span>
+			}
+			else{
+<span class="nc" id="L70">				list.set(i,convert3(list.get(i),p));</span>
+			}
+<span class="nc" id="L72">		}</span>
+<span class="nc" id="L73">		return list;</span>
+	}
+
+	private SalesData convert(OrderItemPojo p) {
+<span class="nc" id="L77">		SalesData d = new SalesData();</span>
+<span class="nc" id="L78">		int brand_category=productDao.select(p.getProductId()).getBrand_category();</span>
+<span class="nc" id="L79">		d.setId(p.getId());</span>
+<span class="nc" id="L80">		d.setDate((orderDao.select(p.getOrderId()).getTime()).toLocalDate());</span>
+<span class="nc" id="L81">		d.setBrand(brandDao.select(brand_category).getBrand());</span>
+<span class="nc" id="L82">		d.setCategory(brandDao.select(brand_category).getCategory());</span>
+<span class="nc" id="L83">		d.setQuantity(p.getQuantity());</span>
+<span class="nc" id="L84">		d.setRevenue(p.getSellingPrice()*p.getQuantity());</span>
+<span class="nc" id="L85">		return d;</span>
+	}
+	private SalesData convert3(SalesData d,OrderItemPojo p) {
+<span class="nc" id="L88">		d.setQuantity(d.getQuantity()+p.getQuantity());</span>
+<span class="nc" id="L89">		d.setRevenue(d.getRevenue()+(p.getSellingPrice()*p.getQuantity()));</span>
+<span class="nc" id="L90">		return d;</span>
+	}
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

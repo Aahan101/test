@@ -4,8 +4,10 @@ import com.increff.employee.dao.OrderDao;
 import com.increff.employee.dao.OrderItemDao;
 import com.increff.employee.model.OrderItemData;
 import com.increff.employee.model.OrderItemForm;
+import com.increff.employee.pojo.InventoryPojo;
 import com.increff.employee.pojo.OrderItemPojo;
 import com.increff.employee.service.ApiException;
+import com.increff.employee.service.InventoryService;
 import com.increff.employee.service.OrderItemService;
 import com.increff.employee.service.OrderService;
 import io.swagger.annotations.Api;
@@ -26,12 +28,17 @@ public class OrderItemApiController {
 	@Autowired
 	private OrderDao orderDao;
 
+	@Autowired
+	private InventoryService inventoryService;
 
 	@ApiOperation(value = "Adds an orderItem")
 	@RequestMapping(path = "/api/orderItem", method = RequestMethod.POST)
 	public void add(@RequestBody OrderItemForm form) throws ApiException {
 		OrderItemPojo p = convert(form);
 		service.add(p);
+		InventoryPojo i = inventoryService.getCheck(p.getProductId());
+		i.setQuantity(inventoryService.getCheck(p.getProductId()).getQuantity()-p.getQuantity());
+		inventoryService.update(p.getProductId(),i);
 	}
 
 	
@@ -78,7 +85,7 @@ public class OrderItemApiController {
 		return d;
 	}
 
-	private  OrderItemPojo convert(OrderItemForm f) throws ApiException {
+	private OrderItemPojo convert(OrderItemForm f) throws ApiException {
 		OrderItemPojo p = new OrderItemPojo();
 		p.setOrderId(f.getOrderId());
 		p.setProductId(service.checkBarcode(f.getBarcode()));

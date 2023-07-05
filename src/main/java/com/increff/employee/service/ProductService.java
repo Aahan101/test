@@ -1,5 +1,6 @@
 package com.increff.employee.service;
 
+import com.increff.employee.controller.ProductApiController;
 import com.increff.employee.dao.BrandDao;
 import com.increff.employee.dao.InventoryDao;
 import com.increff.employee.dao.ProductDao;
@@ -25,56 +26,36 @@ public class ProductService {
 	@Autowired
 	private InventoryDao inventoryDao;
 
-		@Transactional(rollbackOn = ApiException.class)
-	public void addProd(ProductPojo p, ProductForm pf) throws ApiException {
-			System.out.println(pf.getBrand());
-			System.out.println(pf.getCategory());
-		normalize(p);
-		if(StringUtil.isEmpty(p.getName())) {
-			throw new ApiException("Name cannot be empty");
-		}
-		if(StringUtil.isEmpty(p.getBarcode())) {
-			throw new ApiException("Barcode cannot be empty");
-		}
-		if(dao.checkBarcode(p.getBarcode())!=null){
-			throw new ApiException("Barcode already exists");
-		}
-		if(p.getMrp()<0){
-			throw new ApiException("Mrp cannot be negative");
-		}
-//		if(brandDao.checkCategory(p.getBrand_category())==null) {
-//		throw new ApiException("Invalid Brand Category");
-//		}
-//		if(brandDao.checkCombination(pf.getBrand(),pf.getCategory())==null) {
-//			throw new ApiException("Invalid Brand Category");
-//		}
-//		p.setBrand_category(brandDao.checkCombination(pf.getBrand(),pf.getCategory()).getId());
-		dao.insert(p);
-		InventoryPojo pi  = new InventoryPojo();
-		pi.setId(p.getId());
-		pi.setQuantity(0);
-		inventoryDao.insert(pi);
-
-	}
 
 	@Transactional(rollbackOn = ApiException.class)
-	public void add(ProductPojo p) throws ApiException {
+	public void addProd(ProductPojo p, ProductForm pf) throws ApiException {
 		normalize(p);
-		if(StringUtil.isEmpty(p.getName())) {
-			throw new ApiException("Name cannot be empty");
-		}
+//		String check_Mrp=String.valueOf(p.getMrp());
+//		System.out.println("Hey................"+check_Mrp);
 		if(StringUtil.isEmpty(p.getBarcode())) {
 			throw new ApiException("Barcode cannot be empty");
 		}
 		if(dao.checkBarcode(p.getBarcode())!=null){
 			throw new ApiException("Barcode already exists");
 		}
-		if(p.getMrp()<0){
-			throw new ApiException("Mrp cannot be negative");
+		if(pf.getBrand()==""){
+			throw new ApiException("Brand cannot be empty");
+		}
+		if(pf.getCategory()==""){
+			throw new ApiException("Category cannot be empty");
 		}
 		if(p.getBrand_category()==0) {
 			throw new ApiException("Invalid Brand Category");
 		}
+		if(StringUtil.isEmpty(p.getName())) {
+			throw new ApiException("Name cannot be empty");
+		}
+//		if(StringUtil.isEmpty(check_Mrp)) {
+//			throw new ApiException("Mrp cannot be empty");
+//		}
+		if(p.getMrp()<0){
+			throw new ApiException("Mrp cannot be negative");
+		}
 		dao.insert(p);
 		InventoryPojo pi  = new InventoryPojo();
 		pi.setId(p.getId());
@@ -82,6 +63,37 @@ public class ProductService {
 		inventoryDao.insert(pi);
 
 	}
+//
+//	@Transactional(rollbackOn = ApiException.class)
+//	public void add(ProductPojo p) throws ApiException {
+//		normalize(p);
+////		String check_Mrp=String.valueOf(p.getMrp());
+////		System.out.println("Hey................"+check_Mrp);
+//		if(StringUtil.isEmpty(p.getBarcode())) {
+//			throw new ApiException("Barcode cannot be empty");
+//		}
+//		if(dao.checkBarcode(p.getBarcode())!=null){
+//			throw new ApiException("Barcode already exists");
+//		}
+//		if(StringUtil.isEmpty(p.getName())) {
+//			throw new ApiException("Name cannot be empty");
+//		}
+////		if(StringUtil.isEmpty(check_Mrp)) {
+////			throw new ApiException("Mrp cannot be empty");
+////		}
+//		if(p.getMrp()<0){
+//			throw new ApiException("Mrp cannot be negative");
+//		}
+//		if(p.getBrand_category()==0) {
+//			throw new ApiException("Invalid Brand Category");
+//		}
+//		dao.insert(p);
+//		InventoryPojo pi  = new InventoryPojo();
+//		pi.setId(p.getId());
+//		pi.setQuantity(0);
+//		inventoryDao.insert(pi);
+//
+//	}
 
 	@Transactional(rollbackOn = ApiException.class)
 	public ProductPojo get(int id) throws ApiException {
@@ -98,13 +110,39 @@ public class ProductService {
 		return brandDao.select(id);
 	}
 
+//	@Transactional(rollbackOn  = ApiException.class)
+//	public void update(int id, ProductPojo p) throws ApiException {
+//		normalize(p);
+//		ProductPojo ex = getCheck(id);
+//		if(StringUtil.isEmpty(p.getBarcode())) {
+//			throw new ApiException("Barcode cannot be empty");
+//		}
+//		if((dao.checkBarcode(p.getBarcode())!=null ) ){
+//			if(id != dao.checkBarcode(p.getBarcode()).getId()){
+//				throw new ApiException("Barcode already exists");}
+//		}
+//
+//		if(StringUtil.isEmpty(p.getName())) {
+//			throw new ApiException("Name cannot be empty");
+//		}
+//		if(p.getMrp()<0){
+//			throw new ApiException("Mrp cannot be negative");
+//		}
+//		if(brandDao.checkCategory(p.getBrand_category())==null) {
+//			throw new ApiException("Invalid Brand Category");
+//		}
+//
+//		ex.setBarcode(p.getBarcode());
+//		ex.setName(p.getName());
+//		ex.setMrp(p.getMrp());
+//		dao.update(ex);
+//	}
+
+
 	@Transactional(rollbackOn  = ApiException.class)
-	public void update(int id, ProductPojo p) throws ApiException {
+	public void updateProd(int id, ProductPojo p,ProductForm pf) throws ApiException {
 		normalize(p);
 		ProductPojo ex = getCheck(id);
-		if(StringUtil.isEmpty(p.getName())) {
-			throw new ApiException("Name cannot be empty");
-		}
 		if(StringUtil.isEmpty(p.getBarcode())) {
 			throw new ApiException("Barcode cannot be empty");
 		}
@@ -112,11 +150,20 @@ public class ProductService {
 			if(id != dao.checkBarcode(p.getBarcode()).getId()){
 				throw new ApiException("Barcode already exists");}
 		}
-		if(p.getMrp()<0){
-			throw new ApiException("Mrp cannot be negative");
+		if(pf.getBrand()==""){
+			throw new ApiException("Brand cannot be empty");
+		}
+		if(pf.getCategory()==""){
+			throw new ApiException("Category cannot be empty");
 		}
 		if(brandDao.checkCategory(p.getBrand_category())==null) {
 			throw new ApiException("Invalid Brand Category");
+		}
+		if(StringUtil.isEmpty(p.getName())) {
+			throw new ApiException("Name cannot be empty");
+		}
+		if(p.getMrp()<0){
+			throw new ApiException("Mrp cannot be negative");
 		}
 
 		ex.setBarcode(p.getBarcode());
@@ -136,6 +183,5 @@ public class ProductService {
 
 	protected static void normalize(ProductPojo p) {
 		p.setName(StringUtil.toLowerCase(p.getName()));
-
 	}
 }

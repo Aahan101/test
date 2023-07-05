@@ -29,7 +29,7 @@ public class ProductApiController {
 	public void add(@RequestBody ProductForm  form) throws ApiException {
 		ProductPojo p = convert(form);
 		System.out.println(p);
-		service.add(p);
+		service.addProd(p,form);
 	}
 
 
@@ -42,7 +42,7 @@ public class ProductApiController {
 
 	@ApiOperation(value = "Gets list of all products")
 	@RequestMapping(path = "/api/product", method = RequestMethod.GET)
-	public List<ProductData> getAll() {
+	public List<ProductData> getAll() throws ApiException {
 		List<ProductPojo> list = service.getAll();
 		List<ProductData> list2 = new ArrayList<ProductData>();
 		for (ProductPojo p : list) {
@@ -55,7 +55,7 @@ public class ProductApiController {
 	@RequestMapping(path = "/api/product/{id}", method = RequestMethod.PUT)
 	public void update(@PathVariable int id, @RequestBody ProductForm f) throws ApiException {
 		ProductPojo p = convert(f);
-		service.update(id, p);
+		service.updateProd(id, p,f);
 	}
 	
 
@@ -63,6 +63,18 @@ public class ProductApiController {
 		ProductData d = new ProductData();
 		d.setBarcode(p.getBarcode());
 		d.setBrand_category(p.getBrand_category());
+//		if(service.getValueBrandCategory(p.getBrand_category()).getBrand()==null){
+//			throw new ApiException("Brand cannot be empty");
+//		}
+//		else{
+//			d.setBrand(service.getValueBrandCategory(p.getBrand_category()).getBrand());
+//		}
+//		if(service.getValueBrandCategory(p.getBrand_category()).getCategory()==null){
+//			throw new ApiException("Category cannot be empty");
+//		}
+//		else{
+//			d.setCategory(service.getValueBrandCategory(p.getBrand_category()).getCategory());
+//		}
 		d.setBrand(service.getValueBrandCategory(p.getBrand_category()).getBrand());
 		d.setCategory(service.getValueBrandCategory(p.getBrand_category()).getCategory());
 		d.setMrp(p.getMrp());
@@ -71,12 +83,11 @@ public class ProductApiController {
 		return d;
 	}
 
-	private ProductPojo convert(ProductForm f) {
+	private ProductPojo convert(ProductForm f) throws ApiException {
 		ProductPojo p = new ProductPojo();
 		p.setBarcode(f.getBarcode());
 		p.setName(f.getName());
 		p.setMrp(f.getMrp());
-		//System.out.println(brandDao.checkCombination(f.getBrand(),f.getCategory()));
 		if(brandDao.checkCombination(f.getBrand(),f.getCategory())!=null) {
 			p.setBrand_category(brandDao.checkCombination(f.getBrand(),f.getCategory()).getId());
 		}else{

@@ -12,7 +12,12 @@ public class SalesForm {
 
 	private double revenue;
 
+
 	private LocalDate date;
+
+	private LocalDate startDate;
+
+	private LocalDate endDate;
 
 
 	public String getBrand() {
@@ -47,13 +52,29 @@ public class SalesForm {
 		this.quantity = quantity;
 	}
 
-
 	public LocalDate getDate() {
 		return date;
 	}
 
 	public void setDate(LocalDate date) {
 		this.date = date;
+	}
+
+	public LocalDate getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(LocalDate startDate) {
+		this.startDate = startDate;
+	}
+
+	public LocalDate getEndDate() {
+		return endDate;
+	}
+
+
+	public void setEndDate(LocalDate endDate) {
+		this.endDate = endDate;
 	}
 
 }

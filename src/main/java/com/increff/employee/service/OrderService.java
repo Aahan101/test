@@ -42,7 +42,7 @@ public class OrderService {
 		return p;
 	}
 	@Transactional
-	public List<OrderPojo> getOrderIdByDateTime(LocalDateTime startDate,LocalDateTime endDate) {
+	public List<OrderPojo> getRelevantData(LocalDateTime startDate,LocalDateTime endDate) {
 		return dao.selectDateTime(startDate, endDate);
 	}
 

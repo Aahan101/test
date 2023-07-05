@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InventoryApiController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">employee-spring</a> &gt; <a href="index.source.html" class="el_package">com.increff.employee.controller</a> &gt; <span class="el_source">InventoryApiController.java</span></div><h1>InventoryApiController.java</h1><pre class="source lang-java linenums">package com.increff.employee.controller;
+
+import com.increff.employee.model.InventoryData;
+import com.increff.employee.model.InventoryForm;
+import com.increff.employee.model.ProductData;
+import com.increff.employee.pojo.InventoryPojo;
+import com.increff.employee.pojo.ProductPojo;
+import com.increff.employee.service.ApiException;
+import com.increff.employee.service.BrandService;
+import com.increff.employee.service.InventoryService;
+import com.increff.employee.service.ProductService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Api
+@RestController
+<span class="fc" id="L22">public class InventoryApiController {</span>
+
+	@Autowired
+	private InventoryService service;
+
+	@Autowired
+	private ProductService productService;
+
+	@Autowired
+	private BrandService brandService;
+
+	@ApiOperation(value = &quot;Gets an inventory by ID&quot;)
+	@RequestMapping(path = &quot;/api/inventory/{id}&quot;, method = RequestMethod.GET)
+	public InventoryData get(@PathVariable int id) throws ApiException {
+<span class="nc" id="L36">		InventoryPojo p = service.get(id);</span>
+<span class="nc" id="L37">		return convert(p);</span>
+	}
+
+	@ApiOperation(value = &quot;Gets list of all inventory&quot;)
+	@RequestMapping(path = &quot;/api/inventory&quot;, method = RequestMethod.GET)
+	public List&lt;InventoryData&gt; getAll() throws ApiException {
+<span class="nc" id="L43">		List&lt;InventoryPojo&gt; list = service.getAll();</span>
+<span class="nc" id="L44">		List&lt;InventoryData&gt; list2 = new ArrayList&lt;InventoryData&gt;();</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">		for (InventoryPojo p : list) {</span>
+<span class="nc" id="L46">			list2.add(convert(p));</span>
+<span class="nc" id="L47">		}</span>
+
+<span class="nc" id="L49">		return list2;</span>
+	}
+//	@ApiOperation(value = &quot;Gets list of all inventory&quot;)
+//	@RequestMapping(path = &quot;/api/inventory&quot;, method = RequestMethod.GET)
+//	public List&lt;ProductData&gt; getBarcode() {
+//		List&lt;ProductPojo&gt; list = service.getBarcode();
+//		List&lt;ProductData&gt; list2 = new ArrayList&lt;ProductData&gt;();
+//		for (ProductPojo p : list) {
+//			list2.add(convert(p));
+//		}
+//		return list2;
+//	}
+//
+//	private ProductData convert(ProductPojo p) {
+//		ProductData d = new ProductData();
+//		d.setBarcode(p.getBarcode());
+//		d.setBrand_category(p.getBrand_category());
+//		d.setMrp(p.getMrp());
+//		d.setName(p.getName());
+//		d.setId(p.getId());
+//		return d;
+//	}
+
+	@ApiOperation(value = &quot;Updates an inventory&quot;)
+	@RequestMapping(path = &quot;/api/inventory/{id}&quot;, method = RequestMethod.PUT)
+	public void update(@PathVariable int id, @RequestBody InventoryForm f) throws ApiException {
+<span class="nc" id="L75">		InventoryPojo p = convert(f);</span>
+<span class="nc" id="L76">		service.update(id, p);</span>
+<span class="nc" id="L77">	}</span>
+	
+
+	private InventoryData convert(InventoryPojo p) throws ApiException{
+<span class="nc" id="L81">		InventoryData d = new InventoryData();;</span>
+<span class="nc" id="L82">		d.setBarcode(service.getBarcode(p.getId()));</span>
+<span class="nc" id="L83">		int id=productService.get(p.getId()).getBrand_category();</span>
+<span class="nc" id="L84">		d.setBrand(productService.getValueBrandCategory(id).getBrand());</span>
+<span class="nc" id="L85">		d.setCategory(productService.getValueBrandCategory(id).getCategory());</span>
+<span class="nc" id="L86">		d.setQuantity(p.getQuantity());</span>
+<span class="nc" id="L87">		d.setId(p.getId());</span>
+<span class="nc" id="L88">		return d;</span>
+	}
+
+	private static InventoryPojo convert(InventoryForm f) {
+<span class="nc" id="L92">		InventoryPojo p = new InventoryPojo();</span>
+//		p.setQuantity(f.getQuantity());
+<span class="nc bnc" id="L94" title="All 2 branches missed.">		if(p.getQuantity()==0){</span>
+<span class="nc" id="L95">			p.setQuantity(f.getQuantity());</span>
+		}
+		else{
+<span class="nc" id="L98">			p.setQuantity(p.getQuantity()- f.getQuantity());</span>
+		}
+<span class="nc" id="L100">		return p;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

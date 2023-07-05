@@ -1,43 +1,53 @@
 
-function getBrandUrl(){
+function getOrderUrl(){
 	var baseUrl = $("meta[name=baseUrl]").attr("content")
 	return baseUrl + "/api/report/salesReport";
 }
+function getOrderUrl2(){
+	var baseUrl = $("meta[name=baseUrl]").attr("content")
+	return baseUrl + "/api/report/salesReport/new";
+}
 
-//BUTTON ACTIONS
-
-function getBrandList(){
-	var url = getBrandUrl();
+function getOrderList(){
+	var url = getOrderUrl();
 	$.ajax({
 	   url: url,
 	   type: 'GET',
 	   success: function(data) {
-	   		displayBrandList(data);
+	   		displayOrderList(data);
 	   },
 	   error: handleAjaxError
 	});
 }
-//
-//function deleteBrand(id){
-//	var url = getBrandUrl() + "/" + id;
-//
-//	$.ajax({
-//	   url: url,
-//	   type: 'DELETE',
-//	   success: function(data) {
-//	   		getBrandList();
-//	   },
-//	   error: handleAjaxError
-//	});
-//}
+function addOrderData(event){
+	//Set the values to update
+	var $form = $("#sales-form");
+	var json = toJson($form);
+	var url = getOrderUrl();
 
-// FILE UPLOAD METHODS
+	$.ajax({
+	   url: url,
+	   type: 'POST',
+	   data: json,
+	   headers: {
+       	'Content-Type': 'application/json'
+       },
+	   success: function(response) {
+           console.log("yessssssssssssssss");
+           displayOrderList(response);
+	   },
+	   error: handleAjaxError
+	});
+
+	return false;
+}
 
 //UI DISPLAY METHODS
 
-function displayBrandList(data){
+function displayOrderList(data){
 	var $tbody = $('#brand-table').find('tbody');
 	$tbody.empty();
+	console.log("displayBrandList.............");
 	for(var i in data){
 		var e = data[i];
 		var row = '<tr>'
@@ -45,33 +55,18 @@ function displayBrandList(data){
 		+ '<td>' + e.brand + '</td>'
 		+ '<td>'  + e.category + '</td>'
 		+ '<td>' + e.quantity + '</td>'
-		+ '<td>' + e.revenue +'</td>'
-
+		+ '<td>'  + e.revenue + '</td>'
 		+ '</tr>';
         $tbody.append(row);
 	}
 }
 
-
-
-function updateFileName(){
-	var $file = $('#brandFile');
-	var fileName = $file.val();
-	$('#brandFileName').html(fileName);
-}
-
-function displayUploadData(){
- 	resetUploadDialog();
-	$('#upload-brand-modal').modal('toggle');
-}
-
-
-
 //INITIALIZATION CODE
 function init(){
-	$('#refresh-data').click(getBrandList);
-    $('#brandFile').on('change', updateFileName)
+	$('#refresh-data').click(getOrderList);
+	$('#search').click(addOrderData);
 }
 
+
 $(document).ready(init);
-$(document).ready(getBrandList);
+$(document).ready(getOrderList);
